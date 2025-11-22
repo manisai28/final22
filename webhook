@@ -1,0 +1,156 @@
+===========================================
+   JENKINS + GITHUB WEBHOOK SETUP GUIDE
+   (Using ngrok to expose local Jenkins)
+===========================================
+
+This file contains all the steps required to
+set up automatic CI builds using GitHub
+webhooks and Jenkins on a local machine.
+
+-------------------------------------------
+1. REQUIREMENTS
+-------------------------------------------
+- Jenkins installed and running on localhost:8080
+- Git installed on system
+- ngrok installed (free plan)
+- GitHub repository created
+- Jenkins job created (Freestyle or Pipeline)
+
+-------------------------------------------
+2. STARTING NGROK (VERY IMPORTANT)
+-------------------------------------------
+
+STEP 1: Open CMD in the folder where ngrok.exe is located.
+STEP 2: Start a tunnel for Jenkins:
+
+    ngrok http 8080
+
+STEP 3: Copy the HTTPS forwarding URL shown, e.g.:
+
+    https://your-ngrok-url.ngrok-free.dev
+
+This URL publicly exposes your Jenkins.
+
+-------------------------------------------
+3. CONFIGURE GITHUB WEBHOOK
+-------------------------------------------
+
+STEP 1: Go to your GitHub repository.
+STEP 2: Click:
+        Settings → Webhooks → Add Webhook
+
+STEP 3: Fill the webhook form:
+
+    Payload URL:
+    (take from ngrok terminal forwadaing side link to that add /github-webhook/)
+    https://your-ngrok-url.ngrok-free.dev/github-webhook/
+
+    Content type:
+    application/json
+
+    Events:
+    Just the push event
+
+STEP 4: Click "Add Webhook".
+STEP 5: GitHub will show a green check if webhook works.
+
+-------------------------------------------
+4. CONFIGURE JENKINS JOB TO ACCEPT WEBHOOK
+-------------------------------------------
+
+STEP 1: Open Jenkins in browser:
+        http://localhost:8080
+        OR
+        https://your-ngrok-url.ngrok-free.dev
+
+STEP 2: Open the job you want → Click "Configure".
+
+STEP 3: Go to "Source Code Management" section.
+
+STEP 4: Select:
+        Git
+
+STEP 5: Enter your GitHub repo URL, e.g.:
+        https://github.com/yourusername/yourrepo.git
+
+STEP 6: Set the correct branch:
+        If repo uses 'main':
+            */main
+        If repo uses 'master':
+            */master
+
+STEP 7: Scroll to "Build Triggers".
+CHECK THIS BOX:
+        GitHub hook trigger for GITScm polling
+
+STEP 8: Click "Save".
+
+-------------------------------------------
+5. TESTING THE COMPLETE SETUP
+-------------------------------------------
+
+STEP 1: Make any change in your GitHub repository.
+        Example: edit README.md and push it.
+
+STEP 2: GitHub automatically sends a webhook POST to:
+        https://your-ngrok-url.ngrok-free.dev/github-webhook/
+
+STEP 3: In ngrok terminal, you will see entries like:
+        POST /github-webhook/   200 OK
+
+STEP 4: Jenkins starts build automatically with message:
+        "Started by GitHub push"
+
+If Jenkins build succeeds:
+        Finished: SUCCESS
+
+-------------------------------------------
+6. COMMON FIXES
+-------------------------------------------
+
+FIX 1: Jenkins says "Couldn't find any revision to build"
+Cause:
+    Wrong branch name (master vs main)
+Solution:
+    Set branch to */main
+
+FIX 2: Webhook fails
+Cause:
+    ngrok not running
+Solution:
+    Restart ngrok http 8080
+
+FIX 3: Jenkins not triggering automatically
+Cause:
+    GitHub trigger checkbox not enabled
+Solution:
+    Enable:
+        GitHub hook trigger for GITScm polling
+
+-------------------------------------------
+7. SUCCESSFUL SETUP SIGNALS
+-------------------------------------------
+
+- ngrok shows:
+      POST /github-webhook/ 200 OK
+
+- GitHub webhook page shows green ✓
+
+- Jenkins console output shows:
+      Checking out Revision ...
+      Finished: SUCCESS
+
+-------------------------------------------
+8. DONE!
+-------------------------------------------
+
+Your Jenkins job is now fully automated using
+GitHub webhooks + ngrok.
+
+Every push to GitHub will automatically trigger 
+a Jenkins build without manual intervention.
+
+===========================================
+        END OF JENKINS WEBHOOK GUIDE
+===========================================
+

@@ -1,0 +1,337 @@
+
+# **Introduction**
+
+**Kubernetes:**
+Kubernetes is an automation tool that manages how applications run inside containers. Docker only runs containers, but if the container fails, Docker will not restart it. Kubernetes ensures container health by recreating failed containers and managing large container clusters efficiently.
+
+**Pod:**
+Smallest deployable unit in Kubernetes.
+
+**Minikube:**
+A lightweight Kubernetes implementation that runs locally on a VM with a single-node cluster.
+
+**Nagios:**
+An open-source IT infrastructure monitoring tool used to monitor servers, network devices, applications, and services. It alerts administrators when issues occur or when they are resolved.
+
+
+# **MINIKUBE SETUP & USAGE**
+
+## **1. Install Prerequisites**
+
+Ensure the following:
+
+* **Virtualization Enabled:** Confirm virtualization is on.
+* **Hypervisor Installed:** Hyper-V, VirtualBox, or Docker Desktop.
+
+---
+
+## **2. Download & Install Minikube**
+
+Open PowerShell (Admin mode) and run:
+
+```
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-installer.exe
+.\minikube-installer.exe
+```
+
+If Minikube is not added to PATH, manually add:
+
+```
+C:\Program Files\Minikube
+```
+
+in Environment Variables.
+
+---
+
+## **3. Start Minikube**
+
+Choose the driver:
+
+```
+minikube start --driver=hyperv
+minikube start --driver=docker
+```
+
+Check status:
+
+```
+minikube status
+```
+
+---
+
+## **4. Interact with Minikube**
+
+Use kubectl:
+
+```
+minikube kubectl -- get pods -A
+```
+
+Open dashboard:
+
+```
+minikube dashboard
+```
+
+Check versions:
+
+```
+minikube version
+kubectl version --client
+```
+
+Troubleshoot:
+
+```
+minikube logs
+minikube update-check
+minikube update
+```
+
+---
+
+# **MINIKUBE AUTOMATION TASKS**
+
+## **Step 1: Start Minikube**
+
+```
+minikube start
+```
+
+---
+
+## **Step 2: Create Deployment**
+
+Create Nginx deployment:
+
+```
+kubectl create deployment mynginx --image=nginx
+```
+
+If already exists, update:
+
+```
+kubectl set image deployment/mynginx nginx=nginx:latest
+```
+
+Check:
+
+```
+kubectl get deployments
+kubectl get pods
+kubectl describe pods
+```
+
+Expose service:
+
+```
+kubectl expose deployment mynginx --type=NodePort --port=80 --target-port=80
+```
+
+---
+
+## **Step 3: Scale Deployment**
+
+```
+kubectl scale deployment mynginx --replicas=4
+kubectl get service mynginx
+```
+
+---
+
+## **Step 4: Access Nginx App**
+
+Port-forwarding:
+
+```
+kubectl port-forward svc/mynginx 8081:80
+```
+
+Access:
+`http://localhost:8081`
+
+If error, use tunnel:
+
+```
+minikube tunnel
+minikube service mynginx --url
+```
+
+Open dashboard:
+
+```
+minikube dashboard
+```
+
+---
+
+## **Step 5: Cleanup**
+
+Delete deployment & service:
+
+```
+kubectl delete deployment mynginx
+kubectl delete service mynginx
+```
+
+Stop Minikube:
+
+```
+minikube stop
+```
+
+Delete cluster:
+
+```
+minikube delete
+```
+
+---
+
+# **NAGIOS AUTOMATION USING DOCKER**
+
+## **Step 1: Pull Image**
+
+```
+docker pull jasonrivers/nagios:latest
+```
+
+---
+
+## **Step 2: Run Nagios**
+
+```
+docker run --name nagiosdemo -p 8888:80 jasonrivers/nagios:latest
+```
+
+---
+
+## **Step 3: Access Dashboard**
+
+Go to:
+`http://localhost:8888`
+
+Login:
+
+* **Username:** nagiosadmin
+* **Password:** nagios
+
+You can view:
+
+* Hosts
+* Services
+* Alerts
+
+---
+
+## **Step 4: View Host Details**
+
+Check CPU, memory, network, and system status.
+Take actions like rescheduling checks, disabling notifications, scheduling downtime.
+
+---
+
+## **Step 5: Stop & Remove Nagios**
+
+Stop:
+
+```
+docker stop nagiosdemo
+```
+
+Remove container:
+
+```
+docker rm nagiosdemo
+```
+
+Remove image:
+
+```
+docker rmi jasonrivers/nagios:latest
+```
+
+---
+
+# **AWS FREE TIER ACCOUNT CREATION (Steps)**
+
+1. Open: [https://aws.amazon.com](https://aws.amazon.com)
+2. Click **Create AWS Account**
+3. Enter email & name
+4. Enter verification code sent to mail
+5. Provide contact details
+6. Provide card details (₹2 is charged & refunded)
+7. Phone number verification (OTP)
+8. Select **Basic Plan**
+9. Open AWS Console
+10. Choose role: **Academic/Researcher**
+11. Interest: **DevOps**
+12. Log in as **Root User**
+
+---
+
+# **SBQ’s (Short Basic Questions)**
+
+1. **Pod restarting issue?**
+
+   * Check logs → `kubectl logs <pod>`
+
+2. **Pod stuck in Pending?**
+
+   * Not enough resources → `kubectl describe pod <pod>`
+
+3. **Debug failed deployment:**
+
+   * `kubectl describe deployment <name>`
+   * Check logs.
+
+4. **Replica failing health checks:**
+
+   * Check probes, port, logs.
+
+5. **Rollback deployment:**
+
+   * `kubectl rollout undo deployment/<name>`
+
+6. **Debug running pod:**
+
+   * `kubectl logs <pod>`
+   * `kubectl exec -it <pod> -- /bin/bash`
+
+7. **Expose service externally:**
+
+   * `kubectl expose deployment <name> --type=NodePort --port=80`
+
+8. **Start/Stop Nagios:**
+
+   * Start: `sudo systemctl start nagios`
+   * Stop: `sudo systemctl stop nagios`
+
+9. **Nagios web interface error:**
+
+   * `sudo systemctl status nagios`
+
+10. **New host not appearing:**
+
+* Validate config →
+  `sudo /usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg`
+* Restart Nagios.
+
+11. **Check if Nagios is running:**
+
+* `sudo systemctl status nagios`
+
+12. **View real-time logs:**
+
+* Same: `sudo systemctl status nagios`
+
+13. **Advantages of Nagios:**
+
+* Sends alerts
+* Free & open-source
+* Easy monitoring
+
+---
+

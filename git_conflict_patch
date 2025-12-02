@@ -1,0 +1,87 @@
+
+merge conflict :
+
+git init
+
+# Create demo.txt manually with:
+# Line 1
+# Line 2 from MASTER
+# Line 3
+
+git add demo.txt
+git commit -m "Master version 1"
+
+git checkout -b featureA
+
+# Now edit demo.txt manually to:
+# Line 1
+# Line 2 from FEATUREA
+# Line 3
+
+git add demo.txt
+git commit -m "FeatureA version"
+
+git checkout master
+
+# Now edit demo.txt manually to:
+# Line 1
+# Line 2 from MASTER DIFFERENT
+# Line 3
+
+git add demo.txt
+git commit -m "Master version 2"
+
+git merge featureA
+
+
+============================================================================================================
+
+patch:
+
+
+# 1. Create a fresh git repo
+git init
+
+# 2. Create demo.txt manually with clean text:
+# Hello
+# Patch Test
+# Bye
+
+git add demo.txt
+git commit -m "Initial commit"
+
+# 3. Force git to treat .txt files as text (prevents binary patches)
+echo *.txt text > .gitattributes
+git add .gitattributes
+git commit -m "Force text patches for .txt files"
+
+# 4. Edit demo.txt manually with updated content:
+# Hello
+# Patch Test Updated
+# Bye
+
+git add demo.txt
+git commit -m "Update demo.txt"
+
+# 5. Create a normal text patch of the latest commit
+git format-patch -1 HEAD
+
+
+
+# 1. Create a new git repo
+git init
+
+# 2. Create demo.txt manually with the base content:
+# Hello
+# Patch Test
+# Bye
+
+git add demo.txt
+git commit -m "Base commit"
+
+# 3. Apply your patch using full path
+git apply "C:\Users\manis\Desktop\seee\0001-Update-demo.txt.patch"
+
+# (OR apply it as a commit)
+# git am "C:\Users\manis\Desktop\seee\0001-Update-demo.txt.patch"
+
